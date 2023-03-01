@@ -1,114 +1,109 @@
 
 #include<stdio.h>
 #include"meuAlocador.h"
-//tamanho maximo  da memoria:
-#define TAMANHO_HEAP_TOTAL 640000//64 bytes
-#define TAMANHO_HEAP_ALOCADA_TOTAL 1024//1byte
+#define ALINHAMENTO(x) (((x)+(8-1))&~(8-1))//alinhamento de tamanho de 8 bytes
+#define TAMANHO_HEAP (int)sizeof(HeapStruct)//tamanho de acordo com a struct
+// HeapStruct memoriaLivre;
+HeapStruct *ponteiroInicial=NULL;
 
-//heap Memoria:
-char heap[TAMANHO_HEAP_TOTAL]={0};
-int tamanhoHeap=0;
-//heap alocadas:
-HeapStruct heapAlocada[TAMANHO_HEAP_ALOCADA_TOTAL]={0};
-int tamanhoHeapAlocada=0;
+
+HeapStruct*  EncontrarPosicao(HeapStruct *antiga,int tamanho){
+    HeapStruct *posicaoEncontrada= ponteiroInicial;
+    while (posicaoEncontrada && !( posicaoEncontrada->livre&& posicaoEncontrada->tamanho>= tamanho ))
+    {
+        *antiga=*posicaoEncontrada;
+        posicaoEncontrada=posicaoEncontrada->prox;
+    }
+    return posicaoEncontrada;
+    
+}
+HeapStruct *IncluirHeap(HeapStruct *anterior, int tamanho){
+     HeapStruct *ptr;
+     ptr=sbrk(0);
+     if (sbrk(TAMANHO_HEAP + tamanho)==(void*)-1)
+     {
+        return NULL;
+     }
+    ptr->tamanho=tamanho;
+    ptr->prox=NULL;
+    ptr->ant=anterior;
+    ptr->livre=0;
+    if (anterior)
+    {
+        anterior->prox=ptr;
+    }
+    return ptr;
+}
+   
+
+
+// void* InitAlocador(){
+//     memoriaLivre.tamanho=NULL;
+//     memoriaLivre.livre=1;
+//     memoriaLivre.anterior=NULL;
+//     memoriaLivre.prox=NULL;
+// }
 
 void* Alocar(int tamanhoAlocar){
-  if(tamanhoAlocar+tamanhoHeap<=TAMANHO_HEAP_TOTAL&&tamanhoAlocar>0){
-         void*ptr=heap+tamanhoHeap;
-         tamanhoHeap+=tamanhoAlocar;
-        for (int i = 0; i < tamanhoHeapAlocada; i++)
+        HeapStruct memoriaAlocar, memoriaAnterior;
+        int tamanho=ALINHAMENTO(tamanhoAlocar);
+        if (ponteiroInicial)
         {
-            if(heapAlocada[i].livre!=0){
-                heapAlocada[i].ponteiro=ptr;
-                heapAlocada[i].tamanho=tamanhoAlocar;
-                heapAlocada[i].livre=0;
-                return ptr;
-            }
-        }
-        
-        HeapStruct  pedaco;
-        pedaco.ponteiro=ptr;
-        pedaco.tamanho=tamanhoAlocar;
-        pedaco.livre=0;
-        if (tamanhoHeapAlocada<TAMANHO_HEAP_ALOCADA_TOTAL)
-        {
-            heapAlocada[tamanhoHeapAlocada++]=pedaco;
-        }
-         return ptr;
-    }else if(tamanhoAlocar==0){
-        return  NULL;
-    }
-    else{
-        printf("Memoria cheia impossivel Alocar");
-    }
-}
-int  Liberar(void *alocado){
-    HeapStruct temp;
-    int x=0;
-    for (int i = 0; i < tamanhoHeapAlocada; i++)
-    {
-        if (heapAlocada[i].ponteiro==alocado)
-        {
-            tamanhoHeap-=heapAlocada[i].tamanho;
-            x=1;
-            heapAlocada[i].ponteiro=NULL;
-            heapAlocada[i].tamanho=NULL; 
-            heapAlocada[i].livre=1;
-
-        }
-        if(x==1){
-            temp=heapAlocada[i];
-            heapAlocada[i]=heapAlocada[i+1];
-            heapAlocada[i+1]=temp;
-        }
-        
-    }
-   
-    
-    
-}
-void Compare(){
-     printf("teste1:aloca todos os numeros de 0 a 9, caso seje par o teste libera a memoriaque deveria ser armazenada. \n") ;
-     printf("My Malloc:\n");
-    for (int i = 0; i < 10; i++)
-    {
-        void *p=Alocar(i);
-        if(i%2==0){
-            Liberar(p);
+            /* code */
         }else{
-            printf("memoria:%p, armazeno:%d\n",p,i);
+            memoriaAlocar
         }
         
-        
-    }
-    printf("Malloc Original:\n");
-      for (int i = 0; i < 10; i++)
-    {
-        void *p=malloc(i);
-        if(i%2==0){
-            free(p);
-        }
-        else{
-            printf("memoria:%p, armazeno:%d\n",p,i);
-        }
-        
-    }
-    printf("--------------------------------\n");
-    printf("teste2:compara quantos espacos em bytes ele e separado em um alocador 0\n");
-    printf("Malloc Original\n");
-    void *p1=malloc(sizeof (int));
-    void *p2=malloc(sizeof (int));
-    int diferenca=p2-p1;
-    printf("diferenca: %d\n",diferenca);
-   
-    free(p1);
-    free(p2);  
-    printf("My Malloc\n");
-    void *p3=Alocar(sizeof (int));
-    void *p4=Alocar(sizeof (int));
-     diferenca=p4-p3;
-    printf("diferenca: %d\n",diferenca);
-    Liberar(p3);
-    Liberar(p4);
-    
+         return ptr;
 }
+// int  Liberar(void *alocado){
+    
+   
+    
+    
+// }
+// void Compare(){
+//      printf("teste1:aloca todos os numeros de 0 a 9, caso seje par o teste libera a memoriaque deveria ser armazenada. \n") ;
+//      printf("My Malloc:\n");
+//     for (int i = 0; i < 10; i++)
+//     {
+//         void *p=Alocar(i);
+//         if(i%2==0){
+//             Liberar(p);
+//         }else{
+//             printf("memoria:%p, armazeno:%d\n",p,i);
+//         }
+        
+        
+//     }
+//     printf("Malloc Original:\n");
+//       for (int i = 0; i < 10; i++)
+//     {
+//         void *p=malloc(i);
+//         if(i%2==0){
+//             free(p);
+//         }
+//         else{
+//             printf("memoria:%p, armazeno:%d\n",p,i);
+//         }
+        
+//     }
+//     printf("--------------------------------\n");
+//     printf("teste2:compara quantos espacos em bytes ele e separado em um alocador 0\n");
+//     printf("Malloc Original\n");
+//     void *p1=malloc(sizeof (int));
+//     void *p2=malloc(sizeof (int));
+//     int diferenca=p2-p1;
+//     printf("diferenca: %d\n",diferenca);
+   
+//     free(p1);
+//     free(p2);  
+//     printf("My Malloc\n");
+//     void *p3=Alocar(sizeof (int));
+//     void *p4=Alocar(sizeof (int));
+//      diferenca=p4-p3;
+//     printf("diferenca: %d\n",diferenca);
+//     Liberar(p3);
+//     Liberar(p4);
+    
+// }

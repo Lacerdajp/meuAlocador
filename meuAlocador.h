@@ -1,11 +1,15 @@
 #ifndef MEUALOCADOR_H
 #define MEUALOCADOR_H
 //estrutura:
+typedef struct Malloc HeapStruct;
 struct Malloc{
 void *ponteiro;
 int tamanho;
 int livre;
-};typedef struct Malloc HeapStruct;
+HeapStruct*prox;
+HeapStruct*ant;
+
+};
 void* Alocar(int tamanhoAlocar);
 
 int  Liberar(void *alocado);
