@@ -12,7 +12,7 @@ HeapStruct*ant;
 };
 void* Alocar(int tamanhoAlocar);
 
-int  Liberar(void *alocado);
+void Liberar(void *alocado);
 
 void Compare();
 #endif

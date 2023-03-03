@@ -2,22 +2,45 @@
 #include<stdio.h>
 #include"meuAlocador.h"
 #define ALINHAMENTO(x) (((x)+(8-1))&~(8-1))//alinhamento de tamanho de 8 bytes
-#define TAMANHO_HEAP (int)sizeof(HeapStruct)//tamanho de acordo com a struct
-// HeapStruct memoriaLivre;
-HeapStruct *ponteiroInicial=NULL;
-
-
-HeapStruct*  EncontrarPosicao(HeapStruct *antiga,int tamanho){
-    HeapStruct *posicaoEncontrada= ponteiroInicial;
+#define TAMANHO_HEAP 0//tamanho de acordo com a struct
+// HeapStruct memoriaLivre; 
+HeapStruct *ptrInicial=NULL;
+HeapStruct* Juntar(HeapStruct* ptr){
+    if (ptr->prox&&ptr->prox->livre)
+    {
+        ptr->tamanho=ptr->tamanho+ptr->prox->tamanho+TAMANHO_HEAP;
+        ptr->prox=ptr->prox->prox;
+        if (ptr->prox)
+        {
+            ptr->prox->ant=ptr;
+        }
+    }
+    return ptr;
+    
+}
+HeapStruct* ObterPosicao(void * ptr){
+    char*temp=ptr;
+    return ptr=temp-=TAMANHO_HEAP;
+}
+int ValidarPonteiro(void *ptr){
+    if (ptrInicial) 
+        if (ptr>ptrInicial&&ptr<sbrk(0))
+            return ptr== ObterPosicao(ptr)->ponteiro;
+    return 0;
+    
+}
+HeapStruct*  EncontrarPosicao(HeapStruct *anterior,int tamanho){
+    HeapStruct *posicaoEncontrada= ptrInicial;
     while (posicaoEncontrada && !( posicaoEncontrada->livre&& posicaoEncontrada->tamanho>= tamanho ))
     {
-        *antiga=*posicaoEncontrada;
+        *anterior=*posicaoEncontrada;
         posicaoEncontrada=posicaoEncontrada->prox;
     }
     return posicaoEncontrada;
     
 }
-HeapStruct *IncluirHeap(HeapStruct *anterior, int tamanho){
+HeapStruct *IncluirInicioHeap(HeapStruct *anterior, int tamanho){
+     printf("OII");
      HeapStruct *ptr;
      ptr=sbrk(0);
      if (sbrk(TAMANHO_HEAP + tamanho)==(void*)-1)
@@ -34,6 +57,15 @@ HeapStruct *IncluirHeap(HeapStruct *anterior, int tamanho){
     }
     return ptr;
 }
+HeapStruct * IncluirMeioHeap(HeapStruct *ptr,int tamanho){
+     printf("OII");
+    HeapStruct * nova=ptr+tamanho;
+    nova->tamanho=ptr->tamanho-tamanho-TAMANHO_HEAP;
+    nova->livre=1;
+    nova->ant=ptr;
+    ptr->tamanho=tamanho;
+    ptr->prox=nova;
+}
    
 
 
@@ -45,23 +77,76 @@ HeapStruct *IncluirHeap(HeapStruct *anterior, int tamanho){
 // }
 
 void* Alocar(int tamanhoAlocar){
-        HeapStruct memoriaAlocar, memoriaAnterior;
+        printf("OI");
+        HeapStruct *ptr, *anterior;
+        
         int tamanho=ALINHAMENTO(tamanhoAlocar);
-        if (ponteiroInicial)
+       
+        if (ptrInicial)
         {
-            /* code */
+            anterior=ptrInicial;
+            ptr=EncontrarPosicao(anterior,tamanho);
+            if(ptr){
+                if (ptr->tamanho-tamanho>=(TAMANHO_HEAP+4))
+                {
+                    IncluirMeioHeap(ptr,tamanho);
+                }
+                ptr->livre=0;
+                
+            }else
+            {
+                ptr=IncluirInicioHeap(anterior,tamanho);
+                if (!ptr)
+                {
+                    return NULL;
+                }
+                
+            }
+            
         }else{
-            memoriaAlocar
+            ptr=IncluirInicioHeap(NULL,tamanho);
+            if (!ptr)
+            {
+                return NULL;
+            }
+            ptrInicial=ptr;
+            
         }
         
-         return ptr;
+         return ptr->ponteiro;
 }
-// int  Liberar(void *alocado){
-    
+void  Liberar(void *alocado){
+     printf("OII");
+   HeapStruct *ptr;
+   if (ValidarPonteiro(alocado))
+   {
+        ptr=ObterPosicao(alocado);
+        ptr->livre=1;
+        if (ptr->ant&& ptr->ant->livre)
+        {
+            ptr=Juntar(ptr->ant);
+        }
+        if (ptr->prox)
+        {
+            Juntar(ptr);
+        }
+        else
+        {
+            if (ptr->ant)
+            {
+                ptr->ant->prox=NULL;
+            }
+            else ptrInicial=NULL;
+            brk(ptr);
+        }
+        
+        
+   }
    
+
     
     
-// }
+ }
 // void Compare(){
 //      printf("teste1:aloca todos os numeros de 0 a 9, caso seje par o teste libera a memoriaque deveria ser armazenada. \n") ;
 //      printf("My Malloc:\n");
@@ -106,4 +191,4 @@ void* Alocar(int tamanhoAlocar){
 //     Liberar(p3);
 //     Liberar(p4);
     
-// }
+//}
