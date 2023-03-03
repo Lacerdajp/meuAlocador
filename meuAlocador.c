@@ -7,10 +7,10 @@
 #define ALINHAMENTO(x) (((x) + (8 - 1)) & ~(8 - 1)) // alinhamento de tamanho de 8 bytes
 
 
-MemHeader *head = NULL;
+MemHeader *ptrBase = NULL;
 
 void *Alocar(size_t size) {
-    MemHeader *current = head;
+    MemHeader *current = ptrBase;
     MemHeader *prev = NULL;
     size_t aligned_size = ALINHAMENTO(size + sizeof(MemHeader));
 
@@ -29,7 +29,7 @@ void *Alocar(size_t size) {
             if (prev) {
                 prev->next = new;
             } else {
-                head = new;
+                ptrBase = new;
             }
 
             current->size = aligned_size;
@@ -51,7 +51,7 @@ void *Alocar(size_t size) {
         if (prev) {
             prev->next = new;
         } else {
-            head = new;
+            ptrBase = new;
         }
 
         current = new;
@@ -74,7 +74,7 @@ void Liberar(void *ptr) {
     }
 
     if (header->next == NULL) {
-        MemHeader *current = head;
+        MemHeader *current = ptrBase;
         MemHeader *prev = NULL;
         while (current != header) {
             prev = current;
@@ -84,7 +84,7 @@ void Liberar(void *ptr) {
         if (prev) {
             prev->next = NULL;
         } else {
-            head = NULL;
+            ptrBase = NULL;
         }
 
         brk(header);
