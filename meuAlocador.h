@@ -2,11 +2,11 @@
 #define MEUALOCADOR_H
 //estrutura:
 
-typedef struct MemHeader {
-    size_t size;
-    int free;
-    struct MemHeader *next;
-} MemHeader;
+typedef struct Block {
+    size_t tamanho;
+    int livre;
+    struct Block *proximo;
+} Bloco;
 void *Alocar(size_t size);
 
 void Liberar(void *alocado);
