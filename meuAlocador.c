@@ -3,8 +3,8 @@
 #include"meuAlocador.h"
 #include <stdio.h>
 #include <unistd.h>
-
-#define ALINHAMENTO(x) (((x) + (8 - 1)) & ~(8 - 1)) // alinhamento de tamanho de 8 bytes
+ #define ALINHAMENTO(x) ((x)) // alinhamento de tamanho de 8 bytes
+// #define ALINHAMENTO(x) (((x) + (8 - 1)) & ~(8 - 1)) // alinhamento de tamanho de 8 bytes
 
 
 Bloco *ptrBase = NULL;
@@ -20,10 +20,16 @@ void *Alocar(size_t tamanho) {
     //  printf("Vou alocar Agora\n");
     Bloco *ptrAtual = ptrBase;
     Bloco*ptrAnterior = NULL;
+    Bloco*ptrMelhor=NULL;
     size_t alinhamentoTamanho = ALINHAMENTO(tamanho + sizeof(Bloco));
     //se o ponteiro nao for nao nulo e tiver tamanho menor que o alinhamento ou o ponteiro nao for livre. é percorrido o bloco
      while (ptrAtual && (ptrAtual->tamanho < alinhamentoTamanho || !ptrAtual->livre)) { 
-          ptrAnterior = ptrAtual;
+            // if (ptrAtual->tamanho<=)
+            // {
+            //     tamanho
+            // }
+            
+            ptrAnterior = ptrAtual;
             ptrAtual = ptrAtual->proximo;
 
      }
