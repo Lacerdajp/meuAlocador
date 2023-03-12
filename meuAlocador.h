@@ -5,7 +5,7 @@
 typedef struct Block {
     size_t tamanho;
     int livre;
-    struct Block *proximo;
+    unsigned int proximo;
 } Bloco;
 // typedef struct Block {
 //     size_t size;
