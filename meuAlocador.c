@@ -3,6 +3,8 @@
 #include"meuAlocador.h"
 #include <stdio.h>
 #include <unistd.h>
+#define TRUE 1;
+#define FALSE 0;
  #define ALINHAMENTO(x) ((x)) // alinhamento de tamanho de 8 bytes
 // #define ALINHAMENTO(x) (((x) + (8 - 1)) & ~(8 - 1)) // alinhamento de tamanho de 8 bytes
 
@@ -23,38 +25,65 @@ void *Alocar(size_t tamanho) {
     Bloco*ptrMelhor=NULL;
     size_t alinhamentoTamanho = ALINHAMENTO(tamanho + sizeof(Bloco));
     //se o ponteiro nao for nao nulo e tiver tamanho menor que o alinhamento ou o ponteiro nao for livre. é percorrido o bloco
-     while (ptrAtual && (ptrAtual->tamanho < alinhamentoTamanho || !ptrAtual->livre)) { 
-            // if (ptrAtual->tamanho<=)
-            // {
-            //     tamanho
-            // }
-            
+    //  while (ptrAtual && (ptrAtual->tamanho < alinhamentoTamanho || !ptrAtual->livre)) {  
+    //         ptrAnterior = ptrAtual;
+    //         ptrAtual = ptrAtual->proximo;
+
+    //  }
+    Bloco* bestptr=NULL;
+      while (ptrAtual) {
+        if((ptrAtual->tamanho>alinhamentoTamanho && ptrAtual->livre)
+        &&(bestptr==NULL||(bestptr->tamanho>ptrAtual->tamanho))){
+            bestptr=ptrAtual;
+        }  
             ptrAnterior = ptrAtual;
             ptrAtual = ptrAtual->proximo;
-
      }
-    if (ptrAtual) {
-        //  printf("Estou alocando um espaço existente na heap\n");
-        if (ptrAtual->tamanho >= alinhamentoTamanho + sizeof(Bloco)) {
-            Bloco *novo = (Bloco *)((char *)ptrAtual + alinhamentoTamanho);
-            novo->tamanho = ptrAtual->tamanho - alinhamentoTamanho;
-            novo->livre = 1;
-            novo->proximo = ptrAtual->proximo;
+    // if (ptrAtual) {
+        
+    //     //  printf("Estou alocando um  espaço no meio da memoria \n");
+    //     if (ptrAtual->tamanho >= alinhamentoTamanho + sizeof(Bloco)) {
+    //         Bloco *novo = (Bloco *)((char *)ptrAtual + alinhamentoTamanho);
+    //         novo->tamanho = ptrAtual->tamanho - alinhamentoTamanho;
+    //         novo->livre = TRUE;
+    //         novo->proximo = ptrAtual->proximo;
+
+    //         if (ptrAnterior) {
+    //             ptrAnterior->proximo = novo;
+    //         } else {
+    //             ptrBase = novo;
+    //         }
+
+    //         ptrAtual->tamanho = alinhamentoTamanho;
+    //         ptrAtual->livre = FALSE;
+    //         ptrAtual->proximo = novo;
+    //     } else {
+    //         ptrAtual->livre = FALSE;
+    //     }
+     if (bestptr) {
+        
+        //  printf("Estou alocando um  espaço no meio da memoria \n");
+        if (bestptr->tamanho >= alinhamentoTamanho + sizeof(Bloco)) {
+            Bloco *novo = (Bloco *)((char *)bestptr + alinhamentoTamanho);
+            novo->tamanho = bestptr->tamanho - alinhamentoTamanho;
+            novo->livre = TRUE;
+            novo->proximo = bestptr->proximo;
 
             if (ptrAnterior) {
-                ptrAnterior->proximo = novo;
+                ptrAnterior->proximo =novo;
             } else {
                 ptrBase = novo;
             }
 
-            ptrAtual->tamanho = alinhamentoTamanho;
-            ptrAtual->livre = 0;
-            ptrAtual->proximo = novo;
+            bestptr->tamanho = alinhamentoTamanho;
+            bestptr->livre = FALSE;
+            bestptr->proximo = novo;
         } else {
-            ptrAtual->livre = 0;
+            bestptr->livre = FALSE;
         }
+         return (void *)(bestptr+ 1);
     } else {
-        //  printf("Estou alocando um novo espaço na memoria \n");
+        //  printf("Estou alocando um  espaço no Final da memoria \n");
         Bloco *novo= sbrk(alinhamentoTamanho);
        
         if (novo == (void *)-1) {
@@ -62,7 +91,7 @@ void *Alocar(size_t tamanho) {
         }
 
         novo->tamanho = alinhamentoTamanho;
-        novo->livre = 0;
+        novo->livre = FALSE;
         novo->proximo = NULL;
 
         if (ptrAnterior) {
@@ -83,7 +112,7 @@ void Liberar(void *ptr) {
     }
     // printf("Estou Liberando\n");
     Bloco *ptrAtual = (Bloco *)ptr - 1;
-    ptrAtual->livre = 1;
+    ptrAtual->livre = TRUE;
     juntarBlocos(ptrAtual);
     if (ptrAtual->proximo == NULL) {
         Bloco *atual= ptrBase;
