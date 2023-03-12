@@ -1,58 +1,59 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
 #include"meuAlocador.h"
 int main(){
-       printf("TESTE 1 \n") ;
-     printf("My Malloc:\n");
-     void* ponteir[20];
-     int quantidadeArmazenada=0;
-     int quantidadeFragementada=0;
-    for (int i = 0; i < 20; i++)
-    {
-        int diferenca=0;
-        ponteir[i]=Alocar(i);
-        if (i>1)
-        {
-            diferenca=ponteir[i]-ponteir[i-2];
+    //    printf("TESTE 1 \n") ;
+    //  printf("My Malloc:\n");
+    //  void* ponteir[20];
+    //  int quantidadeArmazenada=0;
+    //  int quantidadeFragementada=0;
+    // for (int i = 0; i < 20; i++)
+    // {
+    //     int diferenca=0;
+    //     ponteir[i]=Alocar(i);
+    //     if (i>1)
+    //     {
+    //         diferenca=ponteir[i]-ponteir[i-2];
             
-        }
+    //     }
         
        
-        if(i%2==0){
-            Liberar(ponteir[i]);
-        }else{
-           i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
-           quantidadeArmazenada=i+quantidadeArmazenada;
-            quantidadeFragementada=diferenca-i+quantidadeFragementada;
-        }
+    //     if(i%2==0){
+    //         Liberar(ponteir[i]);
+    //     }else{
+    //        i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
+    //        quantidadeArmazenada=i+quantidadeArmazenada;
+    //         quantidadeFragementada=diferenca-i+quantidadeFragementada;
+    //     }
         
         
-    }
-    printf("quantidade de armazenamentos:%d,quantidade Fragementada: %d\n",quantidadeArmazenada,quantidadeFragementada);
-    printf("Malloc Original:\n");
-    quantidadeArmazenada=0;
-    quantidadeFragementada=0;
-    for (int i = 0; i < 20; i++)
-    {
-        int diferenca=0;
-        ponteir[i]=malloc(i);
-        if (i>1){
-            diferenca=ponteir[i]-ponteir[i-2];
+    // }
+    // printf("quantidade de armazenamentos:%d,quantidade Fragementada: %d\n",quantidadeArmazenada,quantidadeFragementada);
+    // printf("Malloc Original:\n");
+    // quantidadeArmazenada=0;
+    // quantidadeFragementada=0;
+    // for (int i = 0; i < 20; i++)
+    // {
+    //     int diferenca=0;
+    //     ponteir[i]=malloc(i);
+    //     if (i>1){
+    //         diferenca=ponteir[i]-ponteir[i-2];
             
-        }
+    //     }
         
        
-        if(i%2==0){
-            free(ponteir[i]);
-        }else{
-           i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
-            quantidadeArmazenada=i+quantidadeArmazenada;
-            quantidadeFragementada=diferenca-i+quantidadeFragementada;
-        }
+    //     if(i%2==0){
+    //         free(ponteir[i]);
+    //     }else{
+    //        i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
+    //         quantidadeArmazenada=i+quantidadeArmazenada;
+    //         quantidadeFragementada=diferenca-i+quantidadeFragementada;
+    //     }
         
         
-    }
-    printf("quantidade de armazenamentos:%d,quantidade Fragementada: %d\n",quantidadeArmazenada,quantidadeFragementada);
+    // }
+    // printf("quantidade de armazenamentos:%d,quantidade Fragementada: %d\n",quantidadeArmazenada,quantidadeFragementada);
     // printf("--------------------------------\n");
     // printf("TESTE 2\n");
     // printf("Malloc Original\n");
@@ -103,6 +104,30 @@ int main(){
     //     printf("memoria:%p, armazeno:%d,Diferença com a ultima alocação: %d\n",p,i*100,diferenca);
     // }
     
-    
+    printf("TESTE 4\n");
+    printf("My MAlloc\n");
+    clock_t tempo1;
+    tempo1=clock();
+    void*a=Alocar(100);
+    void*b=Alocar(50);
+    void *c= Alocar(100);
+    Liberar(b);
+    void *d=Alocar(50);
+    Liberar(c);
+    Liberar(a);
+    tempo1=clock()-tempo1;
+    printf("Tempo: %lf\n",((double)(tempo1))/(CLOCKS_PER_SEC/1000000));
+     printf("Malloc Original:\n");
+     clock_t tempo2;
+    tempo2=clock();
+    void*e=malloc(100);
+    void*f=malloc(50);
+    void *g= malloc(100);
+    free(f);
+    void *h=malloc(50);
+    free(e);
+    free(g);
+    tempo2=clock()-tempo2;
+    printf("Tempo: %lf\n",((double)(tempo2))/(CLOCKS_PER_SEC/1000000));
     return 0;
 }
