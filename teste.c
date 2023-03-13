@@ -24,8 +24,11 @@ int main(){
             Liberar(ponteir[i]);
         }else{
            i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
-           quantidadeArmazenada=i-2+quantidadeArmazenada;
-            quantidadeFragementada=diferenca-i-2+quantidadeFragementada;
+             if(i>1){
+                quantidadeArmazenada=i-2+quantidadeArmazenada;
+            quantidadeFragementada=diferenca-(i-2)+quantidadeFragementada;
+         
+            }
         }
         
         
@@ -48,8 +51,12 @@ int main(){
             free(ponteir[i]);
         }else{
            i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
-            quantidadeArmazenada=i-2+quantidadeArmazenada;
-            quantidadeFragementada=diferenca-i-2+quantidadeFragementada;
+            
+            if(i!=1){
+                quantidadeArmazenada=i-2+quantidadeArmazenada;
+            quantidadeFragementada=(diferenca-(i-2))+quantidadeFragementada;
+     
+            }
         }
         
         
