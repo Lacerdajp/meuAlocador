@@ -24,8 +24,8 @@ int main(){
             Liberar(ponteir[i]);
         }else{
            i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
-           quantidadeArmazenada=i+quantidadeArmazenada;
-            quantidadeFragementada=diferenca-i+quantidadeFragementada;
+           quantidadeArmazenada=i-2+quantidadeArmazenada;
+            quantidadeFragementada=diferenca-i-2+quantidadeFragementada;
         }
         
         
@@ -48,8 +48,8 @@ int main(){
             free(ponteir[i]);
         }else{
            i==1? printf("memoria:%p, armazeno:%d\n",ponteir[i],i):printf("memoria:%p, armazeno:%d, diferenca ultimo: %d\n",ponteir[i],i,diferenca);
-            quantidadeArmazenada=i+quantidadeArmazenada;
-            quantidadeFragementada=diferenca-i+quantidadeFragementada;
+            quantidadeArmazenada=i-2+quantidadeArmazenada;
+            quantidadeFragementada=diferenca-i-2+quantidadeFragementada;
         }
         
         
@@ -77,6 +77,8 @@ int main(){
     printf("TESTE 3\n");
     printf("My Malloc\n");
     void *temp=NULL;
+    quantidadeArmazenada=0;
+    quantidadeFragementada=0;
     for (int i = 0; i < 10; i++)
     {
          int diferenca=0;
@@ -89,7 +91,15 @@ int main(){
         temp=p;
 
         printf("memoria:%p, armazeno:%d,Diferença com a ultima alocação: %d\n",p,i*100,diferenca);
+        if(i!=0){
+            quantidadeArmazenada=((i-1)*100)+quantidadeArmazenada;
+        quantidadeFragementada=((diferenca-(i-1)*100))+quantidadeFragementada;
+        }
+        
     }
+   printf("quantidade de armazenamentos:%d,quantidade Fragementada: %d\n",quantidadeArmazenada,quantidadeFragementada);
+   quantidadeArmazenada=0;
+   quantidadeFragementada=0;
      printf("Malloc Original\n");
      temp=NULL;
     for (int i = 0; i < 10; i++)
@@ -104,7 +114,12 @@ int main(){
         temp=p;
 
         printf("memoria:%p, armazeno:%d,Diferença com a ultima alocação: %d\n",p,i*100,diferenca);
+       if(i!=0){
+            quantidadeArmazenada=((i-1)*100)+quantidadeArmazenada;
+        quantidadeFragementada=((diferenca-(i-1)*100))+quantidadeFragementada;
+        }
     }
+    printf("quantidade de armazenamentos:%d,quantidade Fragementada: %d\n",quantidadeArmazenada,quantidadeFragementada);    
        printf("--------------------------------\n");
     printf("TESTE 4\n");
     printf("My MAlloc\n");
