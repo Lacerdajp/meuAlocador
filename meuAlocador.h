@@ -10,5 +10,4 @@ void* Alocar(int tamanhoAlocar);
 
 int  Liberar(void *alocado);
 
-void Compare();
 #endif
